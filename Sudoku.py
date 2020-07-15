@@ -49,3 +49,14 @@ class Cell():
 def basic_assign(cell: Cell):
     if sum(cell.candidates) == 1:
         cell.assign_value(cell.candidates.index(1))
+
+
+class Structure(Cell):
+    def __init__(self, structure_type: str, structure_index: int):
+        pass
+
+
+class Board(Cell):
+    def __init__(self, board_coords=consts.board_coords: List[tuple]):
+        self.board_coords = board_coords
+        self.board_cells = [Cell(board_coord) for board_coord in self.board_coords]
