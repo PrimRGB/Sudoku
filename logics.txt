@@ -13,6 +13,7 @@ Sudoku Logics
     - Peer - Cells c1 and c2 are Peers if c1 and c2 are either Row-Peers, Column-Peers or Block-Peers.
     - AssignedValue(Cell) - A single value that is assigned to a cell.
     - Candidates(Cell) - A list of 9 boolean values. The i-th place is 1 if (i+1) is a possible value for cell according to Rules, and 0 otherwise.
+    - Board data can be represnted by an 81-characters long string, where each character is 0-9 with 0 representing an empty cell.
 
 2. Rules
     
