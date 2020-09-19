@@ -1,8 +1,10 @@
 import numpy as np
-import consts
-import sudoku_exceptions
+import src.metadata.consts as consts
+import src.sudoku_exceptions
 # from typing import List
 
+def _get_point_coord(i: int):
+    return (i//9, i%9)
 
 class Board():
     def __init__(self, board_repr, board_coords=consts.board_coords):
@@ -13,14 +15,14 @@ class Board():
         self.board_coords = board_coords
         self.board_data = self._parse_board_data()
 
+
     def _parse_board_data(self):
-        return dict(
-                    zip([(int(self.board_repr[i//9]), int(self.board_repr[i%9])) for i in range(len(self.board_repr))], 
-                        [int(i) for i in range(len(self.board_repr))])
-                    )
+        return dict([(_get_point_coord(i), int(self.board_repr[i])) for i in range(len(self.board_repr))])
+
 
     def get_empty_cells(self):
         return [coord for coord, value in self.board_data.items() if value == 0]
+
 
 # class CellPointers(Board):
 
