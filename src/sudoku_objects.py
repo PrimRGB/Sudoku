@@ -7,9 +7,9 @@ from typing import Tuple, List
 class Board():
     def __init__(self, board_repr: str, board_coords: List[tuple]=consts.board_coords):
         self.board_repr = board_repr
-        self.board_square = len(board_repr)**0.5
-        if self.board_square != round(self.board_square):
-            raise ValueError("Board must be square sized.")
+        self.board_root = len(board_repr)**0.25
+        if self.board_root != round(self.board_root):
+            raise ValueError("Board size must be a power 4 of an integer.")
         self.board_coords = board_coords
         self.board_data = self._parse_board_data()
 
@@ -67,9 +67,10 @@ class CellPointer(Board):
     
 class Cell(CellPointer):
     def __init__(self, board: Board, pointer: CellPointer):
-        super().__init__(board.board_repr, board.board_coords, pointer.coords)
-        self.candidates = [i for i in range(1,10)]
+        super().__init__(board, pointer.coords)
         self.value = self.board_data[self.coords]
+        self.candidates = [i for i in range(1,10)] if self.value == 0 else []
+
 
 
     def eliminate_candidate(self, c: int):
