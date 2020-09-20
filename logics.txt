@@ -1,0 +1,51 @@
+Sudoku Logics
+
+1. Terminology
+    
+    - Cell - A tuple corresponding to coordinates ranging from 1-9.
+    - Row - A list of 9 cells whose tuples share the same x-coordinate.
+    - Column - A list of 9 cells whose tuples share the same y-coordinate.
+    - Block - A list of 9 cells whose tuples share the same x-coord(mod3) and y-coord(mod3).
+    - Structure - Gemeral reference to either Row, Column or Block.
+    - Row-Peer - Cells c1 and c2 are called Row-Peers if c1 and c2 share the same Row.
+    - Column-Peer - Cells c1 and c2 are called Row-Peers if c1 and c2 share the same Column.
+    - Block-Peer - Cells c1 and c2 are called Row-Peers if c1 and c2 share the same Block.
+    - Peer - Cells c1 and c2 are Peers if c1 and c2 are either Row-Peers, Column-Peers or Block-Peers.
+    - AssignedValue(Cell) - A single value that is assigned to a cell.
+    - Candidates(Cell) - A list of 9 boolean values. The i-th place is 1 if (i+1) is a possible value for cell according to Rules, and 0 otherwise.
+    - Board data can be represnted by an 81-characters long string, where each character is 0-9 with 0 representing an empty cell.
+
+2. Rules
+    
+    - A Sudoku board is a 9x9 grid, containing a total of 81 cells.
+    - Peer cells cannot have the same assigned value.
+    - Each row must contain all digits from 1-9.
+    - Each column must contain all digits from 1-9.
+    - Each block must contain all numbers from 1-9.
+
+3. Logics
+
+    I. Basic Assign
+        If for a cell, c, the following holds:
+        - sum(Candidates(c))=1
+        - Candidates(c)[d]=1
+        Then AssignedValue(c) = d+1.
+
+    II. Reverse Assign
+        If for a cell, c, the following holds for either all of its row-peers, all of its column-peers or all of its block-peers, denoted p:
+        - Candidates(p)[d] = 0
+        Then AssignedValue(c) = d+1.
+
+    III. Basic Eliminate
+        If for a cell c, AssignedValue(c) = d+1, then for any peer p of c, Candidates(p)[d] = 0.
+
+    IV. Group Eliminate
+        If within a structure, S, n digits, d1,d2,...,dn, are all candidates of the same n cells c1,c2,...,cn, 
+        then for all d in {d1,d2,..,dn} and for any c in S\{c1,c2,...,cn} the following holds: 
+        Candidates(c)[d+1]=0.
+
+    V. Structure Intersection Eliminate
+        Let S1 and S2 be two intersecting structures.
+        If there exists a digit d, such that for any cell c1 in S1\S2, Candidates(c1)[d+1]=0,
+        then for any cell c2 in S2\S1, Candidates(c2)[d+1]=0.
+
