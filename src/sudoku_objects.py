@@ -2,10 +2,15 @@ import numpy as np
 import src.metadata.consts as consts
 from src import sudoku_exceptions
 from typing import Tuple, List
+import itertools
+
+
+def get_board_coords(root):
+    return [(x,y) for x,y in itertools.product(range(root**2),range(root**2))]
 
 
 class Board():
-    def __init__(self, board_repr: str, board_coords: List[tuple]=consts.board_coords):
+    def __init__(self, board_repr: str, board_coords: List[tuple]=get_board_coords(3)):
         self.board_repr = board_repr
         self.board_root = len(board_repr)**0.25
         if self.board_root != round(self.board_root):
@@ -47,21 +52,43 @@ class CellPointer(Board):
 
     @staticmethod
     def get_block(coord: Tuple[int, int]) -> int:
-        return coord[0]//3+coord[1]//3
+        return (coord[0]//3)*3+coord[1]//3
 
 
+    def peer_row(self, other_coords: Tuple[int, int]) -> bool:
+        return self.row == CellPointer.get_row(other_coords)
+
+
+    def get_all_row_peers_coords(self) -> List[Tuple[int, int]]:
+            return [x for x in self.board_coords if self.peer_row(x)]
+
+
+    def peer_column(self, other_coords: Tuple[int, int]) -> bool:
+        return self.column == CellPointer.get_column(other_coords)
+
+    
+    def get_all_column_peers_coords(self) -> List[Tuple[int, int]]:
+            return [x for x in self.board_coords if self.peer_column(x)]
+
+
+    def peer_block (self, other_coords: Tuple[int, int]) -> bool:
+        return self.block  == CellPointer.get_block(other_coords)
+
+
+    def get_all_block_peers_coords(self) -> List[Tuple[int, int]]:
+            return [x for x in self.board_coords if self.peer_block(x)]
+
+    
     def peer_coords(self, other_coords: Tuple[int, int]) -> bool:
-        return (self.row == CellPointer.get_row(other_coords)) or \
-        (self.column == CellPointer.get_column(other_coords)) or \
-        (self.block == CellPointer.get_block(other_coords))
+        return self.peer_row(other_coords) or self.peer_column(other_coords) or self.peer_block(other_coords)
+    
+
+    def get_all_peers_coords(self) -> List[Tuple[int, int]]:
+        return [x for x in self.board_coords if self.peer_coords(x)]
 
 
     def peer(self, other) -> bool:
         return (self.row == other.row) or (self.column == other.column) or (self.block == other.block)
-    
-
-    def get_peers_coords(self) -> List[tuple]:
-        return [x for x in self.board_coords if self.peer_coords(x)]
     
 
     

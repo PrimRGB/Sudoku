@@ -15,10 +15,10 @@ def test_nonempty_board():
     #print(board.board_data)
 
 
-def test_get_peers_coords():
+def test_get_all_peers_coords():
     board = Board(test_consts.nonempty_board_string)
     cp = CellPointer(board, coords=(0,0))
-    assert cp.get_peers_coords() == test_consts.peers_00
+    assert cp.get_all_peers_coords() == test_consts.peers_00
 
 
 def test_init_cell():
@@ -32,6 +32,5 @@ def test_init_cell():
 if __name__=='__main__':
     test_get_empty_cells()
     test_nonempty_board()
-    test_get_peers_coords()
+    test_get_all_peers_coords()
     test_init_cell()
-    test_assign_value()
