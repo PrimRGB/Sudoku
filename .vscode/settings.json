@@ -1,8 +1,0 @@
-{
-    "python.pythonPath": "/home/raz1/anaconda3/bin/python",
-    "terminal.integrated.env.linux": {"PYTHONPATH": "${workspaceFolder}"},
-    "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true
-
-}
-
