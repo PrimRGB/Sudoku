@@ -2,7 +2,6 @@ import pytest
 from src.sudoku_objects import Board, CellPointer, Cell
 from src.metadata import consts
 from testing import test_consts
-import os
 
 
 def test_get_empty_cells():
@@ -12,7 +11,7 @@ def test_get_empty_cells():
 
 def test_nonempty_board():
     board = Board(test_consts.nonempty_board_string)
-    #print(board.board_data)
+    print(board.board_data)
 
 
 def test_get_all_peers_coords():

@@ -12,7 +12,7 @@ Sudoku Logics
     - Block-Peer - Cells c1 and c2 are called Row-Peers if c1 and c2 share the same Block.
     - Peer - Cells c1 and c2 are Peers if c1 and c2 are either Row-Peers, Column-Peers or Block-Peers.
     - AssignedValue(Cell) - A single value that is assigned to a cell.
-    - Candidates(Cell) - A list of 9 boolean values. The i-th place is 1 if (i+1) is a possible value for cell according to Rules, and 0 otherwise.
+    - Candidates(Cell) - A list of all possible values for cell.
     - Board data can be represnted by an 81-characters long string, where each character is 0-9 with 0 representing an empty cell.
 
 2. Rules
@@ -32,20 +32,23 @@ Sudoku Logics
         Then AssignedValue(c) = d+1.
 
     II. Reverse Assign
-        If for a cell, c, the following holds for either all of its row-peers, all of its column-peers or all of its block-peers, denoted p:
-        - Candidates(p)[d] = 0
+        If for a cell, c, the following holds for either all of its row-peers, 
+        all of its column-peers or all of its block-peers, denoted p:
+        d not in Candidates(p)
         Then AssignedValue(c) = d+1.
 
     III. Basic Eliminate
-        If for a cell c, AssignedValue(c) = d+1, then for any peer p of c, Candidates(p)[d] = 0.
+        If for a cell c, AssignedValue(c) = d+1, then for any peer p of c, d not in Candidates(p).
 
     IV. Group Eliminate
-        If within a structure, S, n digits, d1,d2,...,dn, are all candidates of the same n cells c1,c2,...,cn, 
-        then for all d in {d1,d2,..,dn} and for any c in S\{c1,c2,...,cn} the following holds: 
-        Candidates(c)[d+1]=0.
+        If within a structure, S, n digits, d1,...,dn, are all only candidates of the exact same n cells c1,...,cn,
+        then for all d in {d1,..,dn} and for any c in S\{c1,...,cn}, d+1 not in Candidates(c).
 
     V. Structure Intersection Eliminate
         Let S1 and S2 be two intersecting structures.
-        If there exists a digit d, such that for any cell c1 in S1\S2, Candidates(c1)[d+1]=0,
-        then for any cell c2 in S2\S1, Candidates(c2)[d+1]=0.
+        If there exists a digit d, such that for any cell c1 in S1\S2, d+1 not in Candidates(c1),
+        then for any cell c2 in S2\S1, d+1 not in Candidates(c2).
+        
+        For row and column, this strategy is identical to reverse assign.
+        The useful case is if S1 or S2 is a block.
 
