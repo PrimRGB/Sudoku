@@ -1,8 +1,9 @@
 import pytest
-from src.sudoku_objects import Board, CellPointer, Cell
+from copy import deepcopy
+from src.sudoku_objects import Board, CellPointer, Cell, BoardContext
+from src.board_printer import print_board
 from src.metadata import consts
 from testing import test_consts
-
 
 def test_get_empty_cells():
     board = Board(test_consts.empty_board_string)
@@ -11,21 +12,42 @@ def test_get_empty_cells():
 
 def test_nonempty_board():
     board = Board(test_consts.nonempty_board_string)
-    print(board.board_data)
-
+    assert board.board_data == test_consts.nonempty_board_data
 
 def test_get_all_peers_coords():
     board = Board(test_consts.nonempty_board_string)
-    cp = CellPointer(board, coords=(0,0))
-    assert cp.get_all_peers_coords() == test_consts.peers_00
-
+    pointer = CellPointer(board, coords=(0,0))
+    assert pointer.get_all_peers_coords() == test_consts.peers_00
 
 def test_init_cell():
     board = Board(test_consts.nonempty_board_string)
-    cp = CellPointer(board, coords=(0,0))
-    cell = Cell(board, cp)
+    pointer = CellPointer(board, coords=(0,0))
+    cell = Cell(board, pointer)
     assert cell.value == 4
-    assert cell.candidates == []
+    assert cell.candidates == [4]
+
+def test_assign_value():
+    board = Board(test_consts.nonempty_board_string)
+    pointer = CellPointer(board, coords=(0,1))
+    cell = Cell(board, pointer)
+    cell.assign_value(5)
+    assert cell.value == 5
+
+def test_eliminate_candidates():
+    board = Board(test_consts.nonempty_board_string)
+    pointer = CellPointer(board, coords=(0,1))
+    cell = Cell(board, pointer)
+    print(cell.candidates)
+    cell.eliminate_candidates(5)
+    assert cell.candidates == [1,2,3,4,6,7,8,9]
+
+def changed_board_state():
+    board_context = BoardContext(test_consts.nonempty_board_string)
+    initial_board_state = deepcopy(board_context.get_board_state())
+    board_context.cells[board_context.pointers[(0,1)]].candidates = [5]
+    print_board(board_context.get_board_state())
+    assert initial_board_state != board_context.get_board_state()
+
 
 
 if __name__=='__main__':
@@ -33,3 +55,6 @@ if __name__=='__main__':
     test_nonempty_board()
     test_get_all_peers_coords()
     test_init_cell()
+    test_assign_value()
+    changed_board_state()
+    

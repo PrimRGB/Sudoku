@@ -1,1 +1,1 @@
-structure_types = ['row', 'column', 'peer']
+structure_types = ['row', 'column', 'block']
