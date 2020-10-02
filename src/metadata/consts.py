@@ -1,0 +1,1 @@
+structure_types = ['row', 'column', 'block']
