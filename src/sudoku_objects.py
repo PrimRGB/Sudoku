@@ -39,7 +39,7 @@ class CellPointer(Board):
         return {'row': coords[0], 'column': coords[1], 'block': (coords[0]//3)*3 + coords[1]//3}
 
     def partial_peer_coords(self, other_coords: Tuple[int, int], peer_type: str) -> bool:
-            return self.triple_coords[peer_type] == CellPointer.get_triple_coords(other_coords)[peer_type]
+            return (self.triple_coords[peer_type] == CellPointer.get_triple_coords(other_coords)[peer_type]) and (self.coords != other_coords)
 
     def partial_peer(self, other, peer_type: str) -> bool:
         return self.partial_peer_coords(other.coords, peer_type)
@@ -66,11 +66,11 @@ class Cell(CellPointer):
         self.candidates = [i for i in range(1,10)] if self.value == 0 else [self.value]
 
     def eliminate_candidates(self, candidates_to_remove: Union[int, List[int]]):
-        if len(self.candidates)<2:
-            raise ValueError("There must be at least 2 candidates for a cell in order to eliminate a candidate.")
-        if type(candidates_to_remove) == int:
-            candidates_to_remove = [candidates_to_remove]
-        self.candidates = [candidate for candidate in self.candidates if candidate not in candidates_to_remove]
+        if len(self.candidates)>=2:
+            if type(candidates_to_remove) == int:
+                candidates_to_remove = [candidates_to_remove]
+            self.candidates = [candidate for candidate in self.candidates if candidate not in candidates_to_remove]
+        
 
     def assign_value(self, v: int):
         if self.value!=0:
@@ -78,12 +78,8 @@ class Cell(CellPointer):
         if v not in range(1,10):
              raise ValueError("Assigned value can only be between 1 and 9.")
         self.value = v
+        self.candidates = [v]
 
-    # def get_content(self):
-    #     if self.value != 0:
-    #         return [self.value]
-    #     else:
-    #         return self.candidates
 
 class BoardContext(Cell):
 
@@ -94,7 +90,7 @@ class BoardContext(Cell):
     
     def get_structure_cells(self, structure_type: str, structure_index: int) -> List[Cell]:
         structure_pointers = [self.pointers[coords] for coords in self.board.board_coords
-                                       if CellPointer.get_triple_coords(coords)[structure_type] == structure_index]
+                              if CellPointer.get_triple_coords(coords)[structure_type] == structure_index]
         return [self.cells[pointer] for pointer in structure_pointers]
 
     def get_board_state(self) -> dict:

@@ -37,17 +37,15 @@ def test_eliminate_candidates():
     board = Board(test_consts.nonempty_board_string)
     pointer = CellPointer(board, coords=(0,1))
     cell = Cell(board, pointer)
-    print(cell.candidates)
+    old_candidates = deepcopy(cell.candidates)
     cell.eliminate_candidates(5)
-    assert cell.candidates == [1,2,3,4,6,7,8,9]
+    assert cell.candidates == [candidate for candidate in old_candidates if candidate!=5]
 
 def changed_board_state():
     board_context = BoardContext(test_consts.nonempty_board_string)
     initial_board_state = deepcopy(board_context.get_board_state())
     board_context.cells[board_context.pointers[(0,1)]].candidates = [5]
-    print_board(board_context.get_board_state())
     assert initial_board_state != board_context.get_board_state()
-
 
 
 if __name__=='__main__':
@@ -56,5 +54,6 @@ if __name__=='__main__':
     test_get_all_peers_coords()
     test_init_cell()
     test_assign_value()
+    test_eliminate_candidates()
     changed_board_state()
     

@@ -19,14 +19,15 @@ class SudokuSolver(BoardContext):
             for peer_type in structure_types:
                 partial_peer_pointers = [self.pointers[peer_coords] 
                                         for peer_coords in cell.get_all_partial_peers_coords(peer_type=peer_type)]
-                partial_peers_candidates = [self.cells[peer].candidates
+                partial_peers_candidates = [self.cells[peer].candidates 
                                             for peer in partial_peer_pointers]
                 structure_candidates = set(range(1,10)) - set().union(*partial_peers_candidates)
                 if len(structure_candidates) == 1:
-                    self.cells[cell.pointer].assign_value(list(structure_candidates)[0])
+                    cell.assign_value(list(structure_candidates)[0])
+                    break
             
     def basic_eliminate(self, cell: Cell):
-        if cell.value == 0:
+        if cell.value != 0:
             peer_pointers = [self.pointers[peer_coords] for peer_coords in cell.get_all_peers_coords()]
             peer_cells = [self.cells[peer_pointer] for peer_pointer in peer_pointers]
             for peer_cell in peer_cells:
@@ -36,30 +37,29 @@ class SudokuSolver(BoardContext):
     def group_eliminate(self, structure_type: str, structure_index: int):
         structure_cells = self.get_structure_cells(structure_type, structure_index)
         for subset_size in reversed(range(1,9)):
-            relevant_cells = [cell for cell in structure_cells if len(cell.candidates)>=subset_size]
+            relevant_cells = [cell for cell in structure_cells if len(cell.candidates)==subset_size]
             for subset in combinations(relevant_cells, subset_size):
                 subset_candidates = [set(cell.candidates) for cell in subset]
                 common_subset_candidates = sorted(list(set.intersection(*subset_candidates)))
                 if len(common_subset_candidates) == subset_size:
-                    structure_subset_complement = [cell for cell in structure_cells if cell not in subset_candidates]
-                    for cell in structure_subset_complement:
-                        if len(cell.candidates) >= 2:
-                            cell.eliminate_candidates(structure_subset_complement)
+                    complement_subset = [cell for cell in structure_cells if cell not in subset]
+                    for cell in complement_subset:
+                        cell.eliminate_candidates(common_subset_candidates)
                     for cell in subset:
                         cell.candidates = common_subset_candidates
+                    return
 
     def structure_intersection_eliminate(self, row_or_column: str, row_or_column_index: int, block_index: int):
         row_or_column_cells = self.get_structure_cells(row_or_column, row_or_column_index)
         block_cells = self.get_structure_cells('block', block_index)
-        row_or_column_only_candidates = [set(cell.candidates) for cell in row_or_column_cells
-                                        if cell not in block_cells]
-        total_row_or_column_candidates = sorted(list(set.union(*row_or_column_only_candidates)))
+        row_or_column_only_cells = [cell for cell in row_or_column_cells if cell not in block_cells]
         block_only_cells = [cell for cell in block_cells if cell not in row_or_column_cells]
-        if len(total_row_or_column_candidates) < 9:
-            complement_candidates = [candidate for candidate in list(range(1,10)) if candidate not in total_row_or_column_candidates]
-            for cell in block_only_cells:
-                if len(cell.candidates) >= 2:
-                    cell.eliminate_candidates(complement_candidates)
+        block_only_candidates = [set(cell.candidates) for cell in block_only_cells]
+        total_block_candidates = sorted(list(set.union(*block_only_candidates)))
+        if len(total_block_candidates) < 9:
+            complement_candidates = [candidate for candidate in list(range(1,10)) if candidate not in total_block_candidates]
+            for cell in row_or_column_only_cells:
+                cell.eliminate_candidates(complement_candidates)
 
 
 def solve_sudoku(board_repr: str):
@@ -68,7 +68,6 @@ def solve_sudoku(board_repr: str):
     progress = 1
     
     while progress==1:
-        print(steps_count)
         board_state = deepcopy(solver.get_board_state())
     
         for cell in solver.cells.values():
@@ -86,9 +85,9 @@ def solve_sudoku(board_repr: str):
         for row_or_column, row_or_column_index, block_index in zip(structure_types[:2], range(9), range(9)):
             solver.structure_intersection_eliminate(row_or_column, row_or_column_index, block_index)
         
-        if solver.get_board_state() == board_state and steps_count>4:
+        if solver.get_board_state() == board_state and steps_count>1:
             progress = 0
         steps_count+=1
-        
 
+    print('Total steps:', steps_count)
     return solver.get_board_state()
