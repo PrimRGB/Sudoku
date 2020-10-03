@@ -1,8 +1,7 @@
 from itertools import combinations
 from copy import deepcopy
-from src.sudoku_objects import Board, CellPointer, Cell, BoardContext
+from src.sudoku_objects import Cell, BoardContext
 from src.metadata.consts import structure_types
-from src.board_printer import print_board
 
 class SudokuSolver(BoardContext):
 
@@ -90,4 +89,4 @@ def solve_sudoku(board_repr: str):
         steps_count+=1
 
     print('Total steps:', steps_count)
-    return solver.get_board_state()
+    return solver
