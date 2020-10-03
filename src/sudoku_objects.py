@@ -95,3 +95,6 @@ class BoardContext(Cell):
 
     def get_board_state(self) -> dict:
         return {pointer.coords: cell.candidates for pointer, cell in self.cells.items()}
+
+    def get_board_values(self) -> dict:
+        return {pointer.coords: cell.value for pointer, cell in self.cells.items()}
